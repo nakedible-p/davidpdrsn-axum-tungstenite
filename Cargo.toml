@@ -21,7 +21,7 @@ http-body = "0.4.5"
 hyper = "0.14.23"
 sha-1 = "0.10.1"
 tokio = { version = "1.23.0", features = ["rt"] }
-tokio-tungstenite = "0.18.0"
+tokio-tungstenite = { git = "https://github.com/nakedible-p/snapview-tokio-tungstenite", branch = "deflate-release" }
 
 [dev-dependencies]
 axum = "0.6.1"
