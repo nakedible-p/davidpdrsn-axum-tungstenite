@@ -1,0 +1,21 @@
+	{
+		"image": "mcr.microsoft.com/devcontainers/universal:2",
+		"customizations": {
+			"codespaces": {
+				"repositories": {
+					"nakedible-p/snapview-tokio-tungstenite": {
+						"permissions": "write-all"
+					},
+					"nakedible-p/snapview-tungstenite-rs": {
+						"permissions": "write-all"
+					},
+					"nakedible-p/hyperium-headers": {
+						"permissions": "write-all"
+					}
+				}
+			}
+		},
+		"features": {
+			"ghcr.io/devcontainers/features/rust:1": {}
+		}
+	}
