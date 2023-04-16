@@ -128,6 +128,7 @@ use tokio_tungstenite::{
     tungstenite::protocol::{self, WebSocketConfig},
     WebSocketStream,
 };
+use headers::{HeaderMapExt, SecWebsocketExtensions};
 
 #[doc(no_inline)]
 pub use tokio_tungstenite::tungstenite::error::{
@@ -148,6 +149,7 @@ pub struct WebSocketUpgrade<F = DefaultOnFailedUpdgrade> {
     on_upgrade: OnUpgrade,
     on_failed_upgrade: F,
     sec_websocket_protocol: Option<HeaderValue>,
+    sec_websocket_extensions: Option<SecWebsocketExtensions>,
 }
 
 impl<C> WebSocketUpgrade<C> {
@@ -228,6 +230,11 @@ impl<C> WebSocketUpgrade<C> {
         let on_failed_upgrade = self.on_failed_upgrade;
 
         let protocol = self.protocol.clone();
+        let (sec_websocket_extensions, extensions) = if let Some(ext) = self.sec_websocket_extensions {
+            config.accept_offers(&ext).unzip()
+        } else {
+            (None, None)
+        };
 
         tokio::spawn(async move {
             let upgraded = match on_upgrade.await {
@@ -239,7 +246,7 @@ impl<C> WebSocketUpgrade<C> {
             };
 
             let socket =
-                WebSocketStream::from_raw_socket(upgraded, protocol::Role::Server, Some(config))
+                WebSocketStream::from_raw_socket_with_extensions(upgraded, protocol::Role::Server, Some(config), extensions)
                     .await;
             let socket = WebSocket {
                 inner: socket,
@@ -263,6 +270,9 @@ impl<C> WebSocketUpgrade<C> {
 
         if let Some(protocol) = self.protocol {
             headers.insert(header::SEC_WEBSOCKET_PROTOCOL, protocol);
+        }
+        if let Some(ext) = sec_websocket_extensions {
+            headers.typed_insert(ext);
         }
 
         (StatusCode::SWITCHING_PROTOCOLS, headers).into_response()
@@ -301,6 +311,7 @@ impl<C> WebSocketUpgrade<C> {
             on_upgrade: self.on_upgrade,
             on_failed_upgrade: callback,
             sec_websocket_protocol: self.sec_websocket_protocol,
+            sec_websocket_extensions: self.sec_websocket_extensions,
         }
     }
 }
@@ -338,6 +349,7 @@ where
         let on_upgrade = parts.extensions.remove::<OnUpgrade>().unwrap();
 
         let sec_websocket_protocol = parts.headers.get(header::SEC_WEBSOCKET_PROTOCOL).cloned();
+        let sec_websocket_extensions = parts.headers.typed_get::<SecWebsocketExtensions>();
 
         Ok(Self {
             config: Default::default(),
@@ -346,6 +358,7 @@ where
             on_upgrade,
             on_failed_upgrade: DefaultOnFailedUpdgrade,
             sec_websocket_protocol,
+            sec_websocket_extensions,
         })
     }
 }
