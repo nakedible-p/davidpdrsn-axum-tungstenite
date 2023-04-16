@@ -10,6 +10,10 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/davidpdrsn/axum-tungstenite"
 
+[features]
+deflate = ["tokio-tungstenite/deflate"]
+deflate-opt = ["deflate", "tokio-tungstenite/deflate-opt"]
+
 [dependencies]
 async-trait = "0.1.59"
 axum-core = "0.3.0"
@@ -22,6 +26,7 @@ hyper = "0.14.23"
 sha-1 = "0.10.1"
 tokio = { version = "1.23.0", features = ["rt"] }
 tokio-tungstenite = { git = "https://github.com/nakedible-p/snapview-tokio-tungstenite", branch = "deflate-release" }
+headers = { git = "https://github.com/nakedible-p/hyperium-headers", branch = "deflate-release" }
 
 [dev-dependencies]
 axum = "0.6.1"
