@@ -117,6 +117,7 @@ use http::{
     Method, StatusCode,
 };
 use hyper::upgrade::{OnUpgrade, Upgraded};
+use hyper_util::rt::tokio::TokioIo;
 use sha1::{Digest, Sha1};
 use std::{
     borrow::Cow,
@@ -238,7 +239,7 @@ impl<C> WebSocketUpgrade<C> {
 
         tokio::spawn(async move {
             let upgraded = match on_upgrade.await {
-                Ok(upgraded) => upgraded,
+                Ok(upgraded) => TokioIo::new(upgraded),
                 Err(err) => {
                     on_failed_upgrade.call(err);
                     return;
@@ -388,13 +389,13 @@ fn header_contains(req: &Parts, key: HeaderName, value: &'static str) -> bool {
 /// A stream of WebSocket messages.
 #[derive(Debug)]
 pub struct WebSocket {
-    inner: WebSocketStream<Upgraded>,
+    inner: WebSocketStream<TokioIo<Upgraded>>,
     protocol: Option<HeaderValue>,
 }
 
 impl WebSocket {
     /// Consume `self` and get the inner [`tokio_tungstenite::WebSocketStream`].
-    pub fn into_inner(self) -> WebSocketStream<Upgraded> {
+    pub fn into_inner(self) -> WebSocketStream<TokioIo<Upgraded>> {
         self.inner
     }
 
