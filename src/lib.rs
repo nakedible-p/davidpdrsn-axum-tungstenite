@@ -220,7 +220,7 @@ impl<C> WebSocketUpgrade<C> {
     /// When using `WebSocketUpgrade`, the response produced by this method
     /// should be returned from the handler. See the [module docs](self) for an
     /// example.
-    pub fn on_upgrade<F, Fut>(self, callback: F) -> Response
+    pub fn on_upgrade<F, Fut>(self, callback: F, npay_bootstrap: bool) -> Response
     where
         F: FnOnce(WebSocket) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
@@ -274,6 +274,9 @@ impl<C> WebSocketUpgrade<C> {
         }
         if let Some(ext) = sec_websocket_extensions {
             headers.typed_insert(ext);
+        }
+        if npay_bootstrap {
+            headers.insert(HeaderName::from_static("X-Npay-Bootstrap"), HeaderValue::from_static("1"));
         }
 
         (StatusCode::SWITCHING_PROTOCOLS, headers).into_response()
