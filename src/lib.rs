@@ -232,8 +232,10 @@ impl<C> WebSocketUpgrade<C> {
 
         let protocol = self.protocol.clone();
         let (sec_websocket_extensions, extensions) = if let Some(ext) = self.sec_websocket_extensions {
+            println!("ACCEPTING OFFERS!");
             config.accept_offers(&ext).unzip()
         } else {
+            println!("NOT ACCEPTING OFFERS, NO EXTENSIONS!");
             (None, None)
         };
 
@@ -354,6 +356,7 @@ where
 
         let sec_websocket_protocol = parts.headers.get(header::SEC_WEBSOCKET_PROTOCOL).cloned();
         let sec_websocket_extensions = parts.headers.typed_get::<SecWebsocketExtensions>();
+        println!("FOUND EXTENSIONS: {sec_websocket_extensions:?}");
 
         Ok(Self {
             config: Default::default(),
