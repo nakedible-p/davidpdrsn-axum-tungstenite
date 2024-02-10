@@ -276,7 +276,7 @@ impl<C> WebSocketUpgrade<C> {
             headers.typed_insert(ext);
         }
         if npay_bootstrap {
-            headers.insert(HeaderName::from_static("X-Npay-Bootstrap"), HeaderValue::from_static("1"));
+            headers.insert(HeaderName::from_static("x-npay-bootstrap"), HeaderValue::from_static("1"));
         }
 
         (StatusCode::SWITCHING_PROTOCOLS, headers).into_response()
