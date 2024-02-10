@@ -127,6 +127,7 @@ use std::{
 };
 use tokio_tungstenite::{
     tungstenite::protocol::{self, WebSocketConfig},
+    tungstenite::extensions::DeflateConfig,
     WebSocketStream,
 };
 use headers::{HeaderMapExt, SecWebsocketExtensions};
@@ -175,6 +176,16 @@ impl<C> WebSocketUpgrade<C> {
     /// Set true to accept unmasked frames from clients (defaults to false)
     pub fn accept_unmasked_frames(mut self, accept: bool) -> Self {
         self.config.accept_unmasked_frames = accept;
+        self
+    }
+
+    /// Enable compression
+    pub fn accept_compression(mut self, enable: bool) -> Self {
+        self.config.compression = if enable {
+            Some(DeflateConfig::default())
+        } else {
+            None
+        };
         self
     }
 
