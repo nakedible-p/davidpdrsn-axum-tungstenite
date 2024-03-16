@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None.
 
+# 0.3.0 (02. August, 2022)
+
+- **changed:** Update to tokio-tungstenite 0.20 ([#9])
+
+[#9]: https://github.com/davidpdrsn/axum-tungstenite/pull/9
+
 # 0.2.0 (10. December, 2022)
 
 - **changed:** Update to axum-core 0.3, which requires axum 0.6 ([#6])
